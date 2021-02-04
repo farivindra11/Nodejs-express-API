@@ -2,13 +2,15 @@ const db = require("../config/db.config.js");
 
 const getAll = async (req, res) => {
   try {
-    const user = await db.query("SELECT * FROM tb_user");
+    const data = await db.query("SELECT * FROM tb_user");
     res.json({
-      data: user,
+      data: data.rows,
       status: 200,
     });
   } catch (error) {
-    console.log(error);
+    res.json({
+      messege: error,
+    });
   }
 };
 
@@ -22,17 +24,30 @@ const getById = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const { email, password, nip, nama, level, id_kec } = req.body;
-    const create = await db.query(
-      `INSERT INTO tb_user (email, password, nip, nama, level, id_kec) VALUES($1, $2, $3, $4, $5, $6)`,
+
+    await db.query(
+      "INSERT INTO tb_user (email, password, nip, nama, level, id_kec) VALUES($1, $2, $3, $4, $5, $6)",
       [email, password, nip, nama, level, id_kec]
     );
 
+    const data = ({
+      email,
+      password,
+      nip,
+      nama,
+      level,
+      id_kec,
+    });
+
     res.json({
       status: 200,
-      data: create,
+      message: "User berhasil ditambahkan",
+      data: data,
     });
   } catch (error) {
-    console.log(error);
+       res.json({
+           message: error
+       });
   }
 };
 
