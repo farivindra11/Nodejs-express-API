@@ -1,4 +1,5 @@
-const db = require("../config/db.config.js");
+const db = require('../config/db.config')
+// const user = require('../models/tb_user')
 
 const getAll = async (req, res) => {
   try {
@@ -24,28 +25,18 @@ const getById = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const { email, password, nip, nama, level, id_kec } = req.body;
-
-    await db.query(
-      "INSERT INTO tb_user (email, password, nip, nama, level, id_kec) VALUES($1, $2, $3, $4, $5, $6)",
+    const data = await db.query(
+      "INSERT INTO tb_user (email, password, nip, nama, level, id_kec) VALUES($1, $2, $3, $4, $5, $6) RETURNING *",
       [email, password, nip, nama, level, id_kec]
     );
-
-    const data = ({
-      email,
-      password,
-      nip,
-      nama,
-      level,
-      id_kec,
-    });
-
     res.json({
-      status: 200,
-      message: "User berhasil ditambahkan",
-      data: data,
+        status: 200,
+        message: "You have successfully added data",
+        data: data.rows[0]
     });
   } catch (error) {
        res.json({
+           status: 500,
            message: error
        });
   }
