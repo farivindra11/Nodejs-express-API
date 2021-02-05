@@ -1,15 +1,16 @@
-const db = require('../config/db.config')
+const db = require("../config/db.config");
 // const user = require('../models/tb_user')
 
 const getAll = async (req, res) => {
   try {
     const data = await db.query("SELECT * FROM tb_user");
     res.json({
-      data: data.rows,
       status: 200,
+      message: "You have successfully get data",
+      data: data.rows,
     });
   } catch (error) {
-    res.json({
+    res.status(500).json({
       messege: error,
     });
   }
@@ -17,8 +18,19 @@ const getAll = async (req, res) => {
 
 const getById = async (req, res) => {
   try {
+    const id = req.params.id_user;
+
+    const data = await db.query(`SELECT * FROM tb_user WHERE id_user = ${id}`);
+
+    res.json({
+      status: 200,
+      message: "You have successfully get data by id",
+      data: data.rows[0],
+    });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      message: error,
+    });
   }
 };
 
@@ -30,22 +42,37 @@ const createUser = async (req, res) => {
       [email, password, nip, nama, level, id_kec]
     );
     res.json({
-        status: 200,
-        message: "You have successfully added data",
-        data: data.rows[0]
+      status: 200,
+      message: "You have successfully added data",
+      data: data.rows[0],
     });
   } catch (error) {
-       res.json({
-           status: 500,
-           message: error
-       });
+    res.status(500).json({
+      message: error,
+    });
   }
 };
 
 const updateUser = async (req, res) => {
   try {
+    const id = req.params.id_user;
+
+    const { email, password, nip, nama, level, id_kec } = req.body;
+
+    const data = await db.query(
+      "UPDATE tb_user SET email=$1, password=$2, nip=$3, nama=$4, level=$5, id_kec=$6 WHERE id_user=$7 RETURNING *",
+      [email, password, nip, nama, level, id_kec, id]
+    );
+
+    res.json({
+      status: 200,
+      message: "You have successfully update data",
+      data: data.rows[0],
+    });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      message: error
+    })
   }
 };
 
