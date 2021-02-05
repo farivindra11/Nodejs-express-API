@@ -78,8 +78,18 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
+    const id = req.params.id_user;
+    const data = await db.query('DELETE FROM tb_user WHERE id_user=$1', 
+    [id])
+
+    res.json({
+      status: 200,
+      message: "You successfully delete data"
+    })
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      message: error
+    });
   }
 };
 
